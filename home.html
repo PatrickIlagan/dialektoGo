@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up | DialektoGO</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="override.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Hammersmith+One&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="header">
+      <div class="logo">
+        <img src="images/logo.png" alt="Logo" />
+        <span class="title">
+          <span class="blue">Dialekto</span><span class="orange">GO</span>
+        </span>
+      </div>
+      <div class="lang-selector">
+        <img src="https://img.icons8.com/ios-filled/50/000000/globe--v1.png" alt="Language" />
+        <select>
+          <option>ENG</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="lesson-container">
+      <div class="lesson-sidebar">
+        <button class="lesson-tab active">📖<span>LEARN</span></button>
+        <button class="lesson-tab">🧠<span>PRACTICE</span></button>
+        <button class="lesson-tab">🗣️<span>DICTIONARY</span></button>
+      </div>
+
+      <div class="lesson-main">
+        <div class="lesson-header">
+          <div class="lesson-info">
+            <div class="lesson-title">LEVEL 1</div>
+            <div class="lesson-subtitle">introduce yourself</div>
+          </div>
+          <div class="lesson-help-icon">?</div>
+        </div>
+
+        <div class="lesson-graph-container">
+          <div class="lesson-graph">
+            <div class="lesson-connection">
+              <div class="lesson-node"><img src="icons/ictrophy.png" alt="Brain Icon" /></div>
+              <svg class="lesson-curve" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 35 25 Q 220 10, 150 100" />
+              </svg>
+              <div class="lesson-node even"><img src="icons/icpractice.png" alt="Brain Icon" /></div>
+            </div>
+
+            <div class="lesson-bridge">
+              <svg class="lesson-curve mirror" viewBox="0 40 200 50" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 165 25 Q -10 10, 50 100" />
+              </svg>
+            </div>
+
+            <div class="lesson-connection">
+              <div class="lesson-node"><img src="icons/icstory.png" alt="Brain Icon" /></div>
+              <svg class="lesson-curve" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 35 25 Q 220 10, 150 100" />
+              </svg>
+              <div class="lesson-node even"><img src="icons/icwrite.png" alt="Brain Icon" /></div>
+            </div>
+
+            <div class="lesson-bridge">
+              <svg class="lesson-curve mirror" viewBox="0 40 200 50" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 165 25 Q -10 10, 50 100" />
+              </svg>
+            </div>
+
+            <div class="lesson-connection">
+              <div class="lesson-node"><img src="icons/ictrophy.png" alt="Brain Icon" /></div>
+              <svg class="lesson-curve" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 35 25 Q 220 10, 150 100" />
+              </svg>
+              <div class="lesson-node even"><img src="icons/icpractice.png" alt="Brain Icon" /></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lesson-feedback">
+          <div class="lesson-face">😊</div>
+          <div class="lesson-face">😐</div>
+          <div class="lesson-face">😠</div>
+        </div>
+      </div>
+
+      <!-- AI Chat -->
+      <div class="lesson-chat">
+        <div class="lesson-chat-header">
+          <span>🤖 AI Help</span>
+          <button class="lesson-chat-close">✕</button>
+        </div>
+        <div class="lesson-chat-box">
+          <div id="chatHistory" class="chat-history"></div>
+          <div class="lesson-chat-input">
+            <textarea id="messageInput" rows="2" placeholder="Type your message..."></textarea>
+            <button id="sendBtn">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const neutralFace = document.querySelectorAll(".lesson-face")[1];
+      const chatBox = document.querySelector(".lesson-chat");
+      const closeBtn = document.querySelector(".lesson-chat-close");
+      const sendBtn = document.getElementById("sendBtn");
+      const messageInput = document.getElementById("messageInput");
+      const chatHistory = document.getElementById("chatHistory");
+
+      neutralFace.addEventListener("click", () => {
+        chatBox.style.display = chatBox.style.display === "none" || chatBox.style.display === ""
+          ? "block"
+          : "none";
+      });
+
+      closeBtn.addEventListener("click", () => {
+        chatBox.style.display = "none";
+      });
+
+      sendBtn.addEventListener("click", async () => {
+        const message = messageInput.value.trim();
+        if (!message) return;
+
+        const userMessage = document.createElement("div");
+        userMessage.className = "chat-message chat-user";
+        userMessage.textContent = message;
+        chatHistory.appendChild(userMessage);
+
+        messageInput.value = "";
+
+        try {
+          const res = await fetch("/chat", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ message })
+          });
+
+          const data = await res.json();
+
+          const aiMessage = document.createElement("div");
+          aiMessage.className = "chat-message chat-ai";
+          aiMessage.textContent = data.reply || "No response.";
+          chatHistory.appendChild(aiMessage);
+
+        } catch (err) {
+          const errorMessage = document.createElement("div");
+          errorMessage.className = "chat-message chat-ai";
+          errorMessage.textContent = "❌ Failed to get response.";
+          chatHistory.appendChild(errorMessage);
+        }
+
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+      });
+    });
+  </script>
+
+</body>
+
+</html>
