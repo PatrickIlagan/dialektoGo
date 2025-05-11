@@ -5,14 +5,29 @@ const { Groq } = require('groq-sdk');
 const path = require('path');
 
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3001;
 
-app.use(cors());
+// ✅ CORS for your frontend
+const corsOptions = {
+  origin: 'https://pwa---dialektogo.web.app',
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type']
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
-app.use(express.static(path.join(__dirname))); // To serve home.html
 
+// ✅ Serve static files (like home.html)
+app.use(express.static(path.join(__dirname)));
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'home.html'));
+});
+
+// ✅ Initialize Groq SDK
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
+// ✅ Handle chat POST requests
 app.post('/chat', async (req, res) => {
   const userMessage = req.body.message;
 
@@ -28,7 +43,7 @@ app.post('/chat', async (req, res) => {
           content: userMessage
         }
       ],
-      model: "llama3-8b-8192", // safer default
+      model: "llama3-8b-8192",
       temperature: 1,
       max_completion_tokens: 1024,
       top_p: 1,
@@ -44,6 +59,7 @@ app.post('/chat', async (req, res) => {
   }
 });
 
+// ✅ Start the server
 app.listen(port, () => {
   console.log(`🚀 Server running at http://localhost:${port}`);
 });
