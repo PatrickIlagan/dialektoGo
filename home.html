@@ -100,7 +100,7 @@
     </div>
   </div>
 
-<script>
+  <script>
     document.addEventListener("DOMContentLoaded", function () {
       const neutralFace = document.querySelectorAll(".lesson-face")[1];
       const chatBox = document.querySelector(".lesson-chat");
@@ -131,13 +131,14 @@
         messageInput.value = "";
 
         try {
-          const res = await fetch("https://dialektogo-api.onrender.com", {
+          fetch("https://dialektogo-api.onrender.com/api/chat", {
             method: "POST",
             headers: {
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
             },
-            body: JSON.stringify({ message })
+            body: JSON.stringify({ message }),
           });
+
 
           const data = await res.json();
 
