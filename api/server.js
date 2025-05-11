@@ -17,11 +17,11 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// ✅ Serve static files (like home.html)
-app.use(express.static(path.join(__dirname)));
+// ✅ Serve static files from root (one level up from /api)
+app.use(express.static(path.join(__dirname, '..')));
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'home.html'));
+  res.sendFile(path.join(__dirname, '..', 'home.html'));
 });
 
 // ✅ Initialize Groq SDK
